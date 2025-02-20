@@ -4,45 +4,30 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-
-    
     public KeyCode moveUp = KeyCode.W;      // Move a raquete para cima
     public KeyCode moveDown = KeyCode.S;    // Move a raquete para baixo
-    public float speed = 10.0f;             // Define a velocidade da bola
-    public float boundY = 2.25f;            // Define os limites em Y
-    private Rigidbody2D rb2d;               // Define o corpo rigido 2D que representa a raquete
+    public float speed = 10.0f;             // Velocidade da raquete
+    public float boundY = 4.5f;             // Define o limite superior em Y
+    public float boundX = 11f;              // Define os limites em X
+    private Rigidbody2D rb2d;               // Corpo rígido 2D da raquete
 
-
-    void Start () {
-    rb2d = GetComponent<Rigidbody2D>();     // Inicializa a raquete
-}
-
-
-   void Update () {
-
-    Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    var pos = transform.position;
-    pos.x = mousePos.x;
-    pos.y = mousePos.y;
-    transform.position = pos;
-
-    var pos = transform.position;           // Acessa a Posição da raquete
-    if (pos.y > boundY) {                  
-        pos.y = boundY;                     // Corrige a posicao da raquete caso ele ultrapasse o limite superior
+    void Start()
+    {
+        rb2d = GetComponent<Rigidbody2D>(); // Inicializa a raquete
     }
-    else if (pos.y < -boundY) {
-        pos.y = -boundY;                    // Corrige a posicao da raquete caso ele ultrapasse o limite superior
+
+    void Update()
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePos.z = 0; // Garante que o eixo Z não seja alterado
+
+        Vector2 newPosition = new Vector2(mousePos.x, mousePos.y);
+
+        // Restringe dentro dos limites
+        newPosition.x = Mathf.Clamp(newPosition.x, -boundX, boundX);
+        newPosition.y = Mathf.Clamp(newPosition.y, 1, boundY); // Não pode descer abaixo de Y = 0
+
+        // Movimenta a raquete suavemente usando Rigidbody2D
+        rb2d.MovePosition(newPosition);
     }
-    if (pos.x > boundX){
-        pos.x = boundX;
-    }
-    else if (pos.x < -boundX){
-        pos.x = -boundX
-    }
-    transform.position = pos;               // Atualiza a posição da raquete
-
-}
-
-
-
 }

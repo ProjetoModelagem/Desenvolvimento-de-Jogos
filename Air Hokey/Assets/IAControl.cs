@@ -4,31 +4,33 @@ using UnityEngine;
 
 public class AIControl : MonoBehaviour
 {
-    public float speed = 10.0f;             // Define a velocidade da raquete IA
-    public float boundY = 2.25f;            // Limites em Y para a IA
-    private Rigidbody2D rb2d;               // Corpo rígido 2D da IA
+    public float speed = 15.0f;  // Velocidade da IA
+    public float boundX = 5.5f;  // Limite esquerdo e direito
+    private Rigidbody2D rb2d;    // Corpo rígido 2D da IA
+    private GameObject ball;     // Referência à bola
 
     void Start()
     {
-        rb2d = GetComponent<Rigidbody2D>(); // Inicializa a IA
+        rb2d = GetComponent<Rigidbody2D>(); 
+        ball = GameObject.FindGameObjectWithTag("Bola");
     }
 
     void Update()
     {
-        // Obter a posição do mouse no mundo
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePos.z = 0; // Ignorar a componente Z, já que estamos em 2D
+        if (ball == null)
+        {
+            Debug.LogError("A bola não foi encontrada! Verifique se a tag 'Bola' foi atribuída corretamente.");
+            return;
+        }
 
-        // Manter a posição da IA no eixo Y original, e seguir o mouse no eixo X
-        float newX = mousePos.x;
+        // Pegar posição da bola apenas no eixo X
+        float newX = Mathf.Clamp(ball.transform.position.x, -boundX, boundX);
+        float newY = transform.position.y; // Mantém a posição Y fixa
 
-        // Garantir que a posição Y da IA não ultrapasse os limites
-        float newY = Mathf.Clamp(transform.position.y, -boundY, boundY);
-
-        // Criar a nova posição com o eixo X do mouse e o Y limitado
+        // Criar a nova posição
         Vector3 newPos = new Vector3(newX, newY, transform.position.z);
 
-        // Movimentar a IA de forma suave
+        // Mover suavemente em direção à bola no eixo X
         float step = speed * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, newPos, step);
     }
